@@ -1,5 +1,7 @@
 #pragma once
 
+#define USE_DEQUE
+
 #include "inc/EARTH_PT.h"
 #include "inc/Prefix.h"
 #include "../../Common/PT1OutsideCtrlCmdDef.h"
@@ -47,6 +49,7 @@ protected:
 	CPipeServer m_cPipeS0;
 	CPipeServer m_cPipeS1;
 
+#ifndef USE_DEQUE
 	typedef struct _BUFF_DATA{
 		BYTE* pbBuff;
 		DWORD dwSize;
@@ -65,6 +68,25 @@ protected:
 	vector<BUFF_DATA*> m_T1Buff;
 	vector<BUFF_DATA*> m_S0Buff;
 	vector<BUFF_DATA*> m_S1Buff;
+#else
+	typedef struct _BUFF_DATA{
+		BYTE* pbBuff;
+		DWORD dwSize;
+		DWORD dwSetSize;
+		_BUFF_DATA(DWORD dw) : dwSize(dw){
+			pbBuff = new BYTE[dw];
+			dwSetSize = 0;
+		}
+		~_BUFF_DATA(void){
+			delete[] pbBuff;
+		}
+	}BUFF_DATA;
+
+	deque<BUFF_DATA*> m_T0Buff;
+	deque<BUFF_DATA*> m_T1Buff;
+	deque<BUFF_DATA*> m_S0Buff;
+	deque<BUFF_DATA*> m_S1Buff;
+#endif
 
 	BUFF_DATA* m_T0SetBuff;
 	BUFF_DATA* m_T1SetBuff;

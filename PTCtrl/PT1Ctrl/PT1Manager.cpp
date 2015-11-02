@@ -41,13 +41,11 @@ BOOL CPT1Manager::LoadSDK()
 		PT::Bus::NewBusFunction function = m_cLibrary->Function();
 		if (function == NULL) {
 			SAFE_DELETE(m_cLibrary);
-			m_cLibrary = NULL;
 			return FALSE;
 		}
 		status enStatus = function(&m_cBus);
 		if( enStatus != PT::STATUS_OK ){
 			SAFE_DELETE(m_cLibrary);
-			m_cLibrary = NULL;
 			return FALSE;
 		}
 
@@ -56,9 +54,8 @@ BOOL CPT1Manager::LoadSDK()
 		m_cBus->GetVersion(&version);
 		if ((version >> 8) != 2) {
 			m_cBus->Delete();
-			SAFE_DELETE(m_cLibrary);
-			m_cLibrary = NULL;
 			m_cBus = NULL;
+			SAFE_DELETE(m_cLibrary);
 			return FALSE;
 		}
 	}
@@ -83,7 +80,6 @@ void CPT1Manager::FreeSDK()
 	}
 	if( m_cLibrary != NULL ){
 		SAFE_DELETE(m_cLibrary);
-		m_cLibrary = NULL;
 	}
 }
 
@@ -177,20 +173,33 @@ int CPT1Manager::OpenTuner(BOOL bSate)
 		if( enStatus != PT::STATUS_OK ){
 			return -1;
 		}
-		enStatus = m_EnumDev[iDevID]->pcDevice->Open();
-		if( enStatus != PT::STATUS_OK ){
+		for( int i = 0; i < 5; i++ ){
+			enStatus = m_EnumDev[iDevID]->pcDevice->Open();
+			if( enStatus == PT::STATUS_OK ){
+				break;
+			}
+			m_EnumDev[iDevID]->pcDevice->Close();
+			Sleep(10);
+		}
+		if (enStatus != PT::STATUS_OK){
+			m_EnumDev[iDevID]->pcDevice->Delete();
+			m_EnumDev[iDevID]->pcDevice = NULL;
 			return -1;
 		}
 
 		enStatus = m_EnumDev[iDevID]->pcDevice->SetTunerPowerReset(PT::Device::TUNER_POWER_ON_RESET_ENABLE);
 		if( enStatus != PT::STATUS_OK ){
 			m_EnumDev[iDevID]->pcDevice->Close();
+			m_EnumDev[iDevID]->pcDevice->Delete();
+			m_EnumDev[iDevID]->pcDevice = NULL;
 			return -1;
 		}
 		Sleep(21);
 		enStatus = m_EnumDev[iDevID]->pcDevice->SetTunerPowerReset(PT::Device::TUNER_POWER_ON_RESET_DISABLE);
 		if( enStatus != PT::STATUS_OK ){
 			m_EnumDev[iDevID]->pcDevice->Close();
+			m_EnumDev[iDevID]->pcDevice->Delete();
+			m_EnumDev[iDevID]->pcDevice = NULL;
 			return -1;
 		}
 		Sleep(2);
@@ -198,6 +207,8 @@ int CPT1Manager::OpenTuner(BOOL bSate)
 			enStatus = m_EnumDev[iDevID]->pcDevice->InitTuner(i);
 			if( enStatus != PT::STATUS_OK ){
 				m_EnumDev[iDevID]->pcDevice->Close();
+				m_EnumDev[iDevID]->pcDevice->Delete();
+				m_EnumDev[iDevID]->pcDevice = NULL;
 				return -1;
 			}
 		}
@@ -206,6 +217,8 @@ int CPT1Manager::OpenTuner(BOOL bSate)
 				enStatus = m_EnumDev[iDevID]->pcDevice->SetTunerSleep(i, static_cast<PT::Device::ISDB>(j), true);
 				if( enStatus != PT::STATUS_OK ){
 					m_EnumDev[iDevID]->pcDevice->Close();
+					m_EnumDev[iDevID]->pcDevice->Delete();
+					m_EnumDev[iDevID]->pcDevice = NULL;
 					return -1;
 				}
 			}
@@ -236,6 +249,7 @@ int CPT1Manager::OpenTuner(BOOL bSate)
 		}else{
 			m_EnumDev[iDevID]->bUseT1 = TRUE;
 		}
+		Sleep(10);
 	}else{
 		if( iTuner == 0 ){
 			m_EnumDev[iDevID]->bUseS0 = TRUE;
@@ -282,6 +296,10 @@ BOOL CPT1Manager::CloseTuner(int iID)
 		}else{
 			m_EnumDev[iDevID]->bUseS1 = FALSE;
 		}
+	}
+
+	if( m_bUseLNB == TRUE && m_EnumDev[iDevID]->bUseS0 == FALSE && m_EnumDev[iDevID]->bUseS1 == FALSE ){
+		m_EnumDev[iDevID]->pcDevice->SetLnbPower(PT::Device::LNB_POWER_OFF); 
 	}
 
 	if( m_EnumDev[iDevID]->bUseT0 == FALSE && 
@@ -386,7 +404,7 @@ BOOL CPT1Manager::CloseChk()
 			}
 		}
 		if( m_EnumDev[i]->bUseS1 == TRUE ){
-			iID = (i<<16) | (PT::Device::ISDB_S<<8) | 0;
+			iID = (i<<16) | (PT::Device::ISDB_S<<8) | 1;
 			if(m_EnumDev[i]->cDataIO.GetOverFlowCount(iID) > 100){
 				OutputDebugString(L"S1 OverFlow Close");
 				CloseTuner(iID);
@@ -453,20 +471,34 @@ int CPT1Manager::OpenTuner2(BOOL bSate, int iTunerID)
 		if( enStatus != PT::STATUS_OK ){
 			return -1;
 		}
-		enStatus = m_EnumDev[iDevID]->pcDevice->Open();
+		for( int i = 0; i < 5; i++ ){
+			enStatus = m_EnumDev[iDevID]->pcDevice->Open();
+			if( enStatus == PT::STATUS_OK ){
+				break;
+			}
+			// PT::STATUS_DEVICE_IS_ALREADY_OPEN_ERROR‚Ìê‡‚Íl—¶‚µ‚È‚¢
+			m_EnumDev[iDevID]->pcDevice->Close();
+			Sleep(10);	// •ÛŒ¯
+		}
 		if( enStatus != PT::STATUS_OK ){
+			m_EnumDev[iDevID]->pcDevice->Delete();
+			m_EnumDev[iDevID]->pcDevice = NULL;
 			return -1;
 		}
 
 		enStatus = m_EnumDev[iDevID]->pcDevice->SetTunerPowerReset(PT::Device::TUNER_POWER_ON_RESET_ENABLE);
 		if( enStatus != PT::STATUS_OK ){
 			m_EnumDev[iDevID]->pcDevice->Close();
+			m_EnumDev[iDevID]->pcDevice->Delete();
+			m_EnumDev[iDevID]->pcDevice = NULL;
 			return -1;
 		}
 		Sleep(20);
 		enStatus = m_EnumDev[iDevID]->pcDevice->SetTunerPowerReset(PT::Device::TUNER_POWER_ON_RESET_DISABLE);
 		if( enStatus != PT::STATUS_OK ){
 			m_EnumDev[iDevID]->pcDevice->Close();
+			m_EnumDev[iDevID]->pcDevice->Delete();
+			m_EnumDev[iDevID]->pcDevice = NULL;
 			return -1;
 		}
 		Sleep(1);
@@ -474,6 +506,8 @@ int CPT1Manager::OpenTuner2(BOOL bSate, int iTunerID)
 			enStatus = m_EnumDev[iDevID]->pcDevice->InitTuner(i);
 			if( enStatus != PT::STATUS_OK ){
 				m_EnumDev[iDevID]->pcDevice->Close();
+				m_EnumDev[iDevID]->pcDevice->Delete();
+				m_EnumDev[iDevID]->pcDevice = NULL;
 				return -1;
 			}
 		}
@@ -482,6 +516,8 @@ int CPT1Manager::OpenTuner2(BOOL bSate, int iTunerID)
 				enStatus = m_EnumDev[iDevID]->pcDevice->SetTunerSleep(i, static_cast<PT::Device::ISDB>(j), true);
 				if( enStatus != PT::STATUS_OK ){
 					m_EnumDev[iDevID]->pcDevice->Close();
+					m_EnumDev[iDevID]->pcDevice->Delete();
+					m_EnumDev[iDevID]->pcDevice = NULL;
 					return -1;
 				}
 			}
@@ -512,6 +548,7 @@ int CPT1Manager::OpenTuner2(BOOL bSate, int iTunerID)
 		}else{
 			m_EnumDev[iDevID]->bUseT1 = TRUE;
 		}
+		Sleep(10);
 	}else{
 		if( iTuner == 0 ){
 			m_EnumDev[iDevID]->bUseS0 = TRUE;

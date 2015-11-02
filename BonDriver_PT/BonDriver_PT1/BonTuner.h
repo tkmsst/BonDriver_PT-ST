@@ -61,15 +61,13 @@ protected:
 	typedef struct _TS_DATA{
 		BYTE* pbBuff;
 		DWORD dwSize;
-		_TS_DATA(void){
-			pbBuff = NULL;
-			dwSize = 0;
+		_TS_DATA(BYTE* pb, DWORD dw) : pbBuff(pb), dwSize(dw){
 		}
 		~_TS_DATA(void){
-			SAFE_DELETE_ARRAY(pbBuff);
+			delete[] pbBuff;
 		}
 	} TS_DATA;
-	vector<TS_DATA*> m_TsBuff;
+	deque<TS_DATA*> m_TsBuff;
 	TS_DATA* m_LastBuff;
 
 	HANDLE m_hStopEvent;
@@ -87,7 +85,7 @@ protected:
 
 	wstring m_strTunerName;
 
-	CParseChSet m_chSet;	
+	CParseChSet m_chSet;
 
 protected:
 	static UINT WINAPI RecvThread(LPVOID pParam);
