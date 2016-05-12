@@ -76,11 +76,6 @@ protected:
 	int m_iID;
 	int m_iTunerID;
 
-	BOOL m_bUseUHF;
-	BOOL m_bUseCATV;
-	BOOL m_bUseVHF;
-	BOOL m_bUseBS;
-	BOOL m_bUseCS;
 	wstring m_strPT1CtrlExe;
 
 	wstring m_strTunerName;

@@ -8,7 +8,6 @@ using namespace EARTH;
 
 #include "BonTuner.h"
 
-#define USE_PT2
 static BOOL isISDB_S;
 
 #define DATA_BUFF_SIZE 188*256
@@ -17,7 +16,13 @@ static BOOL isISDB_S;
 #pragma warning( disable : 4273 )
 extern "C" __declspec(dllexport) IBonDriver * CreateBonDriver()
 {
-	return (CBonTuner::m_pThis)? CBonTuner::m_pThis : ((IBonDriver *) new CBonTuner);
+	// 同一プロセスからの複数インスタンス取得禁止
+	// (非同期で取得された場合の排他処理がちゃんと出来ていないが放置)
+	CBonTuner *p = NULL;
+	if (CBonTuner::m_pThis == NULL) {
+		p = new CBonTuner;
+	}
+	return p;
 }
 #pragma warning( default : 4273 )
 
@@ -59,18 +64,12 @@ CBonTuner::CBonTuner()
 	strIni = szPath;
 	strIni += L"BonDriver_PT-ST.ini";
 
-	m_bUseUHF = GetPrivateProfileInt(L"SET", L"UseUHF", 1, strIni.c_str());
-	m_bUseCATV = GetPrivateProfileInt(L"SET", L"UseCATV", 1, strIni.c_str());
-	m_bUseVHF = GetPrivateProfileInt(L"SET", L"UseVHF", 1, strIni.c_str());
-	m_bUseBS = GetPrivateProfileInt(L"SET", L"UseBS", 1, strIni.c_str());
-	m_bUseCS = GetPrivateProfileInt(L"SET", L"UseCS", 1, strIni.c_str());
+	int iPTn = GetPrivateProfileIntW(L"SET", L"PTver", 2, strIni.c_str());
+	if ((iPTn != 2) && (iPTn != 1))
+		iPTn = 2;
 
 	isISDB_S = TRUE;
-#ifdef USE_PT2
-	int iPTn = 2;
-#else
-	int iPTn = 1;
-#endif
+
 	WCHAR szName[256];
 	m_iTunerID = -1;
 	if( wcslen(szFname) == wcslen(L"BonDriver_PT-**") ){
@@ -135,7 +134,7 @@ const BOOL CBonTuner::OpenTuner(void)
 	ZeroMemory(&si,sizeof(si));
 	si.cb=sizeof(si);
 
-	BOOL bRet = CreateProcess( NULL, (LPWSTR)m_strPT1CtrlExe.c_str(), NULL, NULL, FALSE, GetPriorityClass(GetCurrentProcess()), NULL, NULL, &si, &pi );
+	BOOL bRet = CreateProcessW( NULL, (LPWSTR)m_strPT1CtrlExe.c_str(), NULL, NULL, FALSE, GetPriorityClass(GetCurrentProcess()), NULL, NULL, &si, &pi );
 	CloseHandle(pi.hThread);
 	CloseHandle(pi.hProcess);
 
@@ -145,11 +144,12 @@ const BOOL CBonTuner::OpenTuner(void)
 	}else{
 		dwRet = SendOpenTuner(isISDB_S, &m_iID);
 	}
+
+	_RPT3(_CRT_WARN, "*** CBonTuner::OpenTuner() ***\nm_hOnStreamEvent[%p] bRet[%s] dwRet[%u]\n", m_hOnStreamEvent, bRet ? "TRUE" : "FALSE", dwRet);
+
 	if( dwRet != CMD_SUCCESS ){
 		return FALSE;
 	}
-
-	//初期チャンネル
 
 	m_hThread = (HANDLE)_beginthreadex(NULL, 0, RecvThread, (LPVOID)this, CREATE_SUSPENDED, NULL);
 	ResumeThread(m_hThread);
@@ -298,7 +298,7 @@ const BOOL CBonTuner::IsTunerOpening(void)
 {
 	return FALSE;
 }
-	
+
 LPCTSTR CBonTuner::EnumTuningSpace(const DWORD dwSpace)
 {
 	map<DWORD, SPACE_DATA>::iterator itr;
@@ -348,7 +348,7 @@ const BOOL CBonTuner::SetChannel(const DWORD dwSpace, const DWORD dwChannel)
 		return TRUE;
 	}
 }
-	
+
 const DWORD CBonTuner::GetCurSpace(void)
 {
 	return m_dwCurSpace;
@@ -373,27 +373,26 @@ UINT WINAPI CBonTuner::RecvThread(LPVOID pParam)
 	Format(strEvent, L"%s%d", CMD_PT1_DATA_EVENT_WAIT_CONNECT, pSys->m_iID);
 	Format(strPipe, L"%s%d", CMD_PT1_DATA_PIPE, pSys->m_iID);
 
-	while(1){
-		if( WaitForSingleObject( pSys->m_hStopEvent, 0 ) != WAIT_TIMEOUT ){
+	while (1) {
+		if (::WaitForSingleObject( pSys->m_hStopEvent, 0 ) != WAIT_TIMEOUT) {
 			//中止
 			break;
 		}
-		DWORD dwSize = DATA_BUFF_SIZE;
-		BYTE *pbBuff = new BYTE[DATA_BUFF_SIZE];
-		if( SendSendData(pSys->m_iID, pbBuff, &dwSize, strEvent, strPipe) == CMD_SUCCESS ){
+		DWORD dwSize;
+		BYTE *pbBuff;
+		if ((SendSendData(pSys->m_iID, &pbBuff, &dwSize, strEvent, strPipe) == CMD_SUCCESS) && (dwSize != 0)) {
 			TS_DATA *pData = new TS_DATA(pbBuff, dwSize);
 			::EnterCriticalSection(&pSys->m_CriticalSection);
-			while( pSys->m_TsBuff.size() > MAX_BUFF_COUNT ){
+			while (pSys->m_TsBuff.size() > MAX_BUFF_COUNT) {
 				TS_DATA *p = pSys->m_TsBuff.front();
 				pSys->m_TsBuff.pop_front();
 				delete p;
 			}
 			pSys->m_TsBuff.push_back(pData);
 			::LeaveCriticalSection(&pSys->m_CriticalSection);
-			SetEvent(pSys->m_hOnStreamEvent);
+			::SetEvent(pSys->m_hOnStreamEvent);
 		}else{
-			delete[] pbBuff;
-			Sleep(5);
+			::Sleep(5);
 		}
 	}
 

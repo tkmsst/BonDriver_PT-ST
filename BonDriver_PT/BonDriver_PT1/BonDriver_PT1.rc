@@ -73,7 +73,7 @@ BEGIN
             VALUE "FileVersion", "0, 3, 1, 0"
             VALUE "InternalName", "BonDrive_PT-ST"
             VALUE "LegalCopyright", "‚è‚å‚¤‚¿‚ñ Copyright (C) 2008-2009"
-            VALUE "OriginalFilename", "BonDrive_PT-T.dll"
+            VALUE "OriginalFilename", "BonDrive_PT.dll"
             VALUE "ProductName", "BonDrive_PT-ST"
             VALUE "ProductVersion", "0, 3, 1, 0"
         END

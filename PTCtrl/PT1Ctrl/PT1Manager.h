@@ -54,6 +54,7 @@ protected:
 
 	BOOL m_bUseLNB;
 	UINT m_uiVirtualCount;
+	DWORD m_SetChDelay;
 
 protected:
 	void FreeSDK();

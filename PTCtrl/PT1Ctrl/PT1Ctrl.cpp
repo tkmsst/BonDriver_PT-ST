@@ -19,48 +19,84 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
                      LPTSTR    lpCmdLine,
                      int       nCmdShow)
 {
-	if( _tcslen(lpCmdLine) > 0 ){
-		if( lpCmdLine[0] == '-' || lpCmdLine[0] == '/' ){
-			if( _tcsicmp( _T("install"), lpCmdLine+1 ) == 0 ){
+	if (_tcslen(lpCmdLine) > 0) {
+		if (lpCmdLine[0] == '-' || lpCmdLine[0] == '/') {
+			if (_tcsicmp(_T("install"), lpCmdLine + 1) == 0) {
 				WCHAR strExePath[512] = L"";
 				GetModuleFileName(NULL, strExePath, 512);
-				InstallService(strExePath, SERVICE_NAME,SERVICE_NAME);
+				InstallService(strExePath, SERVICE_NAME, SERVICE_NAME);
 				return 0;
-			}else if( _tcsicmp( _T("remove"), lpCmdLine+1 ) == 0 ){
+			}
+			else if (_tcsicmp(_T("remove"), lpCmdLine + 1) == 0) {
 				RemoveService(SERVICE_NAME);
 				return 0;
 			}
 		}
 	}
 
-	if( IsInstallService(SERVICE_NAME) == FALSE ){
+	if (IsInstallService(SERVICE_NAME) == FALSE) {
 		//普通にexeとして起動を行う
-		g_hMutex = _CreateMutex(TRUE, PT1_CTRL_MUTEX);
-		int err = GetLastError();
-		if( g_hMutex != NULL ){
-			if( err != ERROR_ALREADY_EXISTS ) {
-				//起動
-				StartMain(FALSE);
+		HANDLE h = ::OpenMutexW(SYNCHRONIZE, FALSE, PT1_GLOBAL_LOCK_MUTEX);
+		if (h != NULL) {
+			BOOL bErr = FALSE;
+			if (::WaitForSingleObject(h, 100) == WAIT_TIMEOUT) {
+				bErr = TRUE;
 			}
-			::ReleaseMutex(g_hMutex);
-			::CloseHandle(g_hMutex);
+			::ReleaseMutex(h);
+			::CloseHandle(h);
+			if (bErr) {
+				return -1;
+			}
 		}
-	}else{
+
+		g_hStartEnableEvent = _CreateEvent(TRUE, TRUE, PT1_STARTENABLE_EVENT);
+		if (g_hStartEnableEvent == NULL) {
+			return -2;
+		}
+		// 別プロセスが終了処理中の場合は終了を待つ(最大1秒)
+		if (::WaitForSingleObject(g_hStartEnableEvent, 1000) == WAIT_TIMEOUT) {
+			::CloseHandle(g_hStartEnableEvent);
+			return -3;
+		}
+
+		g_hMutex = _CreateMutex(TRUE, PT1_CTRL_MUTEX);
+		if (g_hMutex == NULL) {
+			::CloseHandle(g_hStartEnableEvent);
+			return -4;
+		}
+		if (::WaitForSingleObject(g_hMutex, 100) == WAIT_TIMEOUT) {
+			// 別プロセスが実行中だった
+			::CloseHandle(g_hMutex);
+			::CloseHandle(g_hStartEnableEvent);
+			return -5;
+		}
+
+		//起動
+		StartMain(FALSE);
+
+		::ReleaseMutex(g_hMutex);
+		::CloseHandle(g_hMutex);
+
+		::SetEvent(g_hStartEnableEvent);
+		::CloseHandle(g_hStartEnableEvent);
+	}
+	else {
 		//サービスとしてインストール済み
-		if( IsStopService(SERVICE_NAME) == FALSE ){
+		if (IsStopService(SERVICE_NAME) == FALSE) {
 			g_hMutex = _CreateMutex(TRUE, PT1_CTRL_MUTEX);
 			int err = GetLastError();
-			if( g_hMutex != NULL && err != ERROR_ALREADY_EXISTS ) {
+			if (g_hMutex != NULL && err != ERROR_ALREADY_EXISTS) {
 				//起動
 				SERVICE_TABLE_ENTRY dispatchTable[] = {
-					{ SERVICE_NAME, (LPSERVICE_MAIN_FUNCTION)service_main},
-					{ NULL, NULL}
+					{ SERVICE_NAME, (LPSERVICE_MAIN_FUNCTION)service_main },
+					{ NULL, NULL }
 				};
-				if( StartServiceCtrlDispatcher(dispatchTable) == FALSE ){
+				if (StartServiceCtrlDispatcher(dispatchTable) == FALSE) {
 					OutputDebugString(_T("StartServiceCtrlDispatcher failed"));
 				}
 			}
-		}else{
+		}
+		else {
 			//Stop状態なので起動する
 			StartServiceCtrl(SERVICE_NAME);
 		}

@@ -3,7 +3,7 @@
 
 CPT1CtrlMain::CPT1CtrlMain(void)
 {
-	m_hStopEvent = _CreateEvent(TRUE, FALSE,NULL);
+	m_hStopEvent = _CreateEvent(TRUE, FALSE, NULL);
 	m_bService = FALSE;
 }
 
@@ -114,10 +114,16 @@ void CPT1CtrlMain::CmdCloseTuner(CMD_STREAM* pCmdParam, CMD_STREAM* pResParam)
 	int iID;
 	CopyDefData((DWORD*)&iID, pCmdParam->bData);
 	m_cPT1.CloseTuner(iID);
-	Sleep(100);
 	pResParam->dwParam = CMD_SUCCESS;
-	if( m_cPT1.IsFindOpen() == FALSE && m_bService == FALSE){
-		StopMain();
+	if (m_bService == FALSE) {
+		HANDLE h = _CreateMutex(TRUE, PT1_GLOBAL_LOCK_MUTEX);
+		if (m_cPT1.IsFindOpen() == FALSE) {
+			// 今から終了するので問題が無くなるタイミングまで別プロセスの開始を抑制
+			ResetEvent(g_hStartEnableEvent);
+			StopMain();
+		}
+		ReleaseMutex(h);
+		CloseHandle(h);
 	}
 }
 
