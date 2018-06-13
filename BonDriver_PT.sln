@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BonDriver_PT", "BonDriver_PT1\BonDriver_PT1.vcxproj", "{902AA00E-8764-41C6-AF3C-43A8F6D874DF}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BonDriver_PT", "BonDriver_PT\BonDriver_PT1.vcxproj", "{902AA00E-8764-41C6-AF3C-43A8F6D874DF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PTCtrl", "PTCtrl\PT1Ctrl.vcxproj", "{D67CB079-8B00-4E9A-8C6E-93852D081ED2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,8 +23,19 @@ Global
 		{902AA00E-8764-41C6-AF3C-43A8F6D874DF}.Release|Win32.Build.0 = Release|Win32
 		{902AA00E-8764-41C6-AF3C-43A8F6D874DF}.Release|x64.ActiveCfg = Release|x64
 		{902AA00E-8764-41C6-AF3C-43A8F6D874DF}.Release|x64.Build.0 = Release|x64
+		{D67CB079-8B00-4E9A-8C6E-93852D081ED2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D67CB079-8B00-4E9A-8C6E-93852D081ED2}.Debug|Win32.Build.0 = Debug|Win32
+		{D67CB079-8B00-4E9A-8C6E-93852D081ED2}.Debug|x64.ActiveCfg = Debug|x64
+		{D67CB079-8B00-4E9A-8C6E-93852D081ED2}.Debug|x64.Build.0 = Debug|x64
+		{D67CB079-8B00-4E9A-8C6E-93852D081ED2}.Release|Win32.ActiveCfg = Release|Win32
+		{D67CB079-8B00-4E9A-8C6E-93852D081ED2}.Release|Win32.Build.0 = Release|Win32
+		{D67CB079-8B00-4E9A-8C6E-93852D081ED2}.Release|x64.ActiveCfg = Release|x64
+		{D67CB079-8B00-4E9A-8C6E-93852D081ED2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7FCDCBF7-D5CC-49C0-80F1-2A94CEF48CE5}
 	EndGlobalSection
 EndGlobal

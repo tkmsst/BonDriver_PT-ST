@@ -5,9 +5,6 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="ソース ファイル\inc">
-      <UniqueIdentifier>{58953a71-cce4-4d20-9564-99a06c6b07c8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\Common">
       <UniqueIdentifier>{58b153c5-9cc0-40f2-9d0d-1ee0cfe7ecd6}</UniqueIdentifier>
     </Filter>
@@ -45,22 +42,22 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PipeServer.cpp">
+    <ClCompile Include="..\Common\PipeServer.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PT1CreateCtrlCmdUtil.cpp">
+    <ClCompile Include="..\Common\PT1CreateCtrlCmdUtil.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PT1SendCtrlCmdUtil.cpp">
+    <ClCompile Include="..\Common\PT1SendCtrlCmdUtil.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\ServiceUtil.cpp">
+    <ClCompile Include="..\Common\ServiceUtil.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\StringUtil.cpp">
+    <ClCompile Include="..\Common\StringUtil.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Util.cpp">
+    <ClCompile Include="..\Common\Util.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -98,25 +95,25 @@
     <ClInclude Include="inc\Prefix_Integer.h">
       <Filter>ヘッダー ファイル\inc</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PipeServer.h">
+    <ClInclude Include="..\Common\Util.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PT1CreateCtrlCmdUtil.h">
+    <ClInclude Include="..\Common\PipeServer.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PT1OutsideCtrlCmdDef.h">
+    <ClInclude Include="..\Common\PT1CreateCtrlCmdUtil.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PT1SendCtrlCmdUtil.h">
+    <ClInclude Include="..\Common\PT1OutsideCtrlCmdDef.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\ServiceUtil.h">
+    <ClInclude Include="..\Common\PT1SendCtrlCmdUtil.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\StringUtil.h">
+    <ClInclude Include="..\Common\ServiceUtil.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\Util.h">
+    <ClInclude Include="..\Common\StringUtil.h">
       <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
   </ItemGroup>

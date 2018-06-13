@@ -5,7 +5,7 @@
 #include "PT1Ctrl.h"
 
 #include "PT1CtrlMain.h"
-#include "../../Common/ServiceUtil.h"
+#include "../Common/ServiceUtil.h"
 
 CPT1CtrlMain g_cMain;
 HANDLE g_hMutex;

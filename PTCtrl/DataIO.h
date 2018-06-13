@@ -4,8 +4,8 @@
 
 #include "inc/EARTH_PT.h"
 #include "inc/Prefix.h"
-#include "../../Common/PT1OutsideCtrlCmdDef.h"
-#include "../../Common/PipeServer.h"
+#include "../Common/PT1OutsideCtrlCmdDef.h"
+#include "../Common/PipeServer.h"
 #include "MicroPacketUtil.h"
 
 #define TRANSFER_SIZE (4096*PT::Device::BUFFER_PAGE_COUNT)

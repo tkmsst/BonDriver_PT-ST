@@ -8,9 +8,6 @@
     <Filter Include="ソース ファイル\Common">
       <UniqueIdentifier>{17cd4624-9e51-4aac-8e1c-7b51f53a16a3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\inc">
-      <UniqueIdentifier>{ed90220a-b14d-4aef-be6d-e7149f9f8cdd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
@@ -39,19 +36,19 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PipeServer.cpp">
+    <ClCompile Include="..\Common\Util.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PT1CreateCtrlCmdUtil.cpp">
+    <ClCompile Include="..\Common\PipeServer.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\PT1SendCtrlCmdUtil.cpp">
+    <ClCompile Include="..\Common\PT1CreateCtrlCmdUtil.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\StringUtil.cpp">
+    <ClCompile Include="..\Common\PT1SendCtrlCmdUtil.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Common\Util.cpp">
+    <ClCompile Include="..\Common\StringUtil.cpp">
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
   </ItemGroup>
@@ -74,24 +71,6 @@
     <ClInclude Include="stdafx.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Common\PipeServer.h">
-      <Filter>ヘッダー ファイル\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\PT1CreateCtrlCmdUtil.h">
-      <Filter>ヘッダー ファイル\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\PT1OutsideCtrlCmdDef.h">
-      <Filter>ヘッダー ファイル\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\PT1SendCtrlCmdUtil.h">
-      <Filter>ヘッダー ファイル\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\StringUtil.h">
-      <Filter>ヘッダー ファイル\Common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\Util.h">
-      <Filter>ヘッダー ファイル\Common</Filter>
-    </ClInclude>
     <ClInclude Include="inc\EARTH_PT.h">
       <Filter>ヘッダー ファイル\inc</Filter>
     </ClInclude>
@@ -103,6 +82,24 @@
     </ClInclude>
     <ClInclude Include="inc\Prefix_Integer.h">
       <Filter>ヘッダー ファイル\inc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\Util.h">
+      <Filter>ヘッダー ファイル\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\PipeServer.h">
+      <Filter>ヘッダー ファイル\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\PT1CreateCtrlCmdUtil.h">
+      <Filter>ヘッダー ファイル\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\PT1OutsideCtrlCmdDef.h">
+      <Filter>ヘッダー ファイル\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\PT1SendCtrlCmdUtil.h">
+      <Filter>ヘッダー ファイル\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Common\StringUtil.h">
+      <Filter>ヘッダー ファイル\Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

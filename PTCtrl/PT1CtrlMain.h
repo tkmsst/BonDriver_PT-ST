@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../Common/PT1SendCtrlCmdUtil.h"
-#include "../../Common/PipeServer.h"
+#include "../Common/PT1SendCtrlCmdUtil.h"
+#include "../Common/PipeServer.h"
 #include "PT1Manager.h"
 
 class CPT1CtrlMain
